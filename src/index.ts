@@ -30,7 +30,7 @@ Pulsar.export(async (sdk: Supernova, context: PulsarContext): Promise<Array<AnyO
     const themes = await sdk.tokens.getTokenThemes(remoteVersionIdentifier)
     const theme = themes.find((theme) => theme.id === context.themeId)
     if (theme) {
-      tokens = await sdk.tokens.computeTokensByApplyingThemes(tokens, [theme])
+      tokens = await sdk.tokens.computeTokensByApplyingThemes(tokens, tokens, [theme])
     } else {
       // Don't allow applying theme which doesn't exist in the system
       throw new Error("Unable to apply theme which doesn't exist in the system.")
