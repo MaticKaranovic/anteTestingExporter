@@ -26,18 +26,15 @@ Pulsar.export(async (sdk: Supernova, context: PulsarContext): Promise<Array<AnyO
   }
 
   // Apply theme, if specified by the VSCode extension or pipeline configuration
-  if (context.themeIds && context.themeIds.length > 0) {
+  if (context.themeId) {
     const themes = await sdk.tokens.getTokenThemes(remoteVersionIdentifier)
-
-    const themesToApply = context.themeIds.map((themeId) => {
-      const theme = themes.find((theme) => theme.id === themeId || theme.idInVersion === themeId)
-      if (!theme) {
-        throw new Error(`Unable to find theme ${themeId}.`)
-      }
-      return theme
-    })
-    
-    tokens = sdk.tokens.computeTokensByApplyingThemes(tokens, tokens, themesToApply)
+    const theme = themes.find((theme) => theme.id === context.themeId)
+    if (theme) {
+      tokens = await sdk.tokens.computeTokensByApplyingThemes(tokens, [theme])
+    } else {
+      // Don't allow applying theme which doesn't exist in the system
+      throw new Error("Unable to apply theme which doesn't exist in the system.")
+    }
   }
 
   // Convert all color tokens to CSS variables
